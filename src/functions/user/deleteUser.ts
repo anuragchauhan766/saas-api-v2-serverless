@@ -1,14 +1,16 @@
-import { APIGatewayProxyHandler } from "aws-lambda";
-import { jsonResponse } from "src/helper/jsonResponse";
-import { getAuth } from "firebase-admin/auth";
-import { initializeFirebaseSdk } from "src/config/firebase";
-import { connectDB } from "src/config/mongo";
-import { User } from "src/model/user";
 import middy from "@middy/core";
-import { Query } from "mongoose";
+
+import { APIGatewayProxyHandler } from "aws-lambda";
+
+import { connectDB } from "src/config/mongo";
+
+import { jsonResponse } from "src/helper/jsonResponse";
+
+import { User } from "src/model/user";
 
 const lambdaHandler: APIGatewayProxyHandler = async (event, context) => {
-  // TODO: apply security so that a user can only get its owns info
+  // TODO: apply security so that a user can only delete its owns info
+
   try {
     if (!event.queryStringParameters) {
       return jsonResponse(400, {
@@ -25,27 +27,21 @@ const lambdaHandler: APIGatewayProxyHandler = async (event, context) => {
           "Please provide valid query parameter, accepted parameter are 'email' or 'id'",
       });
     }
-    const query = id ? { _id: id } : { email };
+    const filter = id ? { _id: id } : { email };
 
     await connectDB();
-    const users = await User.findOne(query);
-    if (!users) {
-      return jsonResponse(404, {
-        success: false,
-        messgae: "user not found with the given parameter",
-      });
-    }
+    await User.deleteOne(filter);
     return jsonResponse(200, {
       success: true,
-      messgae: "user data is listed below",
-      users,
+      messgae: "User deleted successfully",
     });
-  } catch (error) {
+  } catch (error: any) {
     return jsonResponse(500, {
       success: false,
-      messgae: "Internal server error",
-      error,
+      message: "Internal server error, Could not delete user",
+      error: error.message,
     });
   }
 };
+
 export const handler = middy(lambdaHandler);

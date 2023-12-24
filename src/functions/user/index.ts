@@ -9,6 +9,7 @@ export default {
         http: {
           method: "get",
           path: "/user",
+          authorizer: "${self:custom.authorizer.firebaseJwtVerifier}",
         },
       },
     ],
@@ -31,6 +32,30 @@ export default {
       {
         http: {
           method: "post",
+          path: "/user",
+          authorizer: "${self:custom.authorizer.firebaseJwtVerifier}",
+        },
+      },
+    ],
+  },
+  updateUser: {
+    handler: `${handlerPath(__dirname)}/updateUser.handler`,
+    events: [
+      {
+        http: {
+          method: "put",
+          path: "/user",
+          authorizer: "${self:custom.authorizer.firebaseJwtVerifier}",
+        },
+      },
+    ],
+  },
+  deleteUser: {
+    handler: `${handlerPath(__dirname)}/deleteUser.handler`,
+    events: [
+      {
+        http: {
+          method: "delete",
           path: "/user",
           authorizer: "${self:custom.authorizer.firebaseJwtVerifier}",
         },
