@@ -1,7 +1,6 @@
-import { Schema, ObjectId, model } from "mongoose";
-import { string, z, infer as zodInfer } from "zod";
+import { Schema, model } from "mongoose";
+import { z, infer as zodInfer } from "zod";
 
-import { v4 as uuidv4 } from "uuid";
 // !! Please match the moongose schema and zodschema if you are making any changes in schema
 
 export const createUserBodySchema = z.object({

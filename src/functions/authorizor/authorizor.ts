@@ -28,14 +28,15 @@ const generatePolicy = function (
 
   // ! uncomment this for production
   // attached user info in context to that next function can  access these details
-  // if (token) {
-  //   authResponse.context = {
-  //     uid: token.uid,
-  //     name: token.name,
-  //     email: token.email,
-  //   };
-  // }
-
+  console.log(token);
+  if (token) {
+    authResponse.context = {
+      uid: token.uid,
+      name: token.name ?? "",
+      email: token.email,
+    };
+  }
+  console.log(authResponse);
   // * for Testing
   // authResponse.context = {
   //   uid: "8328420342",
@@ -68,11 +69,11 @@ export const tokenAuthorizer: APIGatewayTokenAuthorizerHandler = async (
       return generatePolicy("Deny", event.methodArn);
     }
     // ! uncomment this for production
-    // initializeFirebaseSdk();
-    // const decodedToken = await getAuth().verifyIdToken(tokenValue);
+    initializeFirebaseSdk();
+    const decodedToken = await getAuth().verifyIdToken(tokenValue);
     // TODO: check if user has permission to access resource
 
-    return generatePolicy("Allow", event.methodArn);
+    return generatePolicy("Allow", event.methodArn, decodedToken);
   } catch (error) {
     console.error(error);
     return generatePolicy("Deny", event.methodArn);
