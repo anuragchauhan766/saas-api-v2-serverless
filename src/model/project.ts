@@ -1,30 +1,34 @@
-import { Schema, model } from "mongoose";
+import { Schema, Types, model } from "mongoose";
+import * as path from "path";
+import { zodObjectId } from "src/helper/zodObjectIdTypes";
 import { string, z, infer as zodInfer } from "zod";
 
-export const createProjectBodySchema = z.object({
-  _id: z.instanceof(Schema.Types.ObjectId).optional(),
-  name: z.string().min(1, "Please provide name"),
-  ownerId: z.instanceof(Schema.Types.ObjectId),
-  // answers: z.string().optional(),
-  backgroundColor: z.string().default("#ffffff").optional(),
-  basePrompt: z.string().optional(),
-  bot_logo: z.string().optional(),
-  botBackgroundColor: z.string().optional(),
-  botMessageColor: z.string().optional(),
-  userMessageColor: z.string().optional(),
-  bot_category: z.string().optional(),
-  fileNames: z.string().array(),
-  fontColor: z.string().optional(),
-  initialMessage: z.string().optional(),
-  jobDescription: z.string().optional(),
-  language_bot: z.string().optional(),
-  links: z.string().array().optional(),
-  // nameSpace: z.string().optional(), same as project name
-  // projectName: z.string().optional(), already mention above with name field
-  // questions: z.string().optional(), if these are interview question ? these are already handled in separate model
-  temperature: z.number().optional(),
-  visibility: z.enum(["private", "public"]).default("private").optional(),
-});
+export const createProjectBodySchema = z
+  .object({
+    _id: zodObjectId("_id").optional(),
+    name: z.string().min(1, "Please provide name"),
+    ownerId: zodObjectId("ownerId"),
+    // answers: z.string().optional(),
+    backgroundColor: z.string().default("#ffffff").optional(),
+    basePrompt: z.string().optional(),
+    bot_logo: z.string().optional(),
+    botBackgroundColor: z.string().optional(),
+    botMessageColor: z.string().optional(),
+    userMessageColor: z.string().optional(),
+    bot_category: z.string().optional(),
+    fileNames: z.string().array().optional(),
+    fontColor: z.string().optional(),
+    initialMessage: z.string().optional(),
+    jobDescription: z.string().optional(),
+    language_bot: z.string().optional(),
+    links: z.string().array().optional(),
+    // nameSpace: z.string().optional(), same as project name
+    // projectName: z.string().optional(), already mention above with name field
+    // questions: z.string().optional(), if these are interview question ? these are already handled in separate model
+    temperature: z.number().optional(),
+    visibility: z.enum(["private", "public"]).default("private"),
+  })
+  .strict();
 
 export type IProject = zodInfer<typeof createProjectBodySchema>;
 

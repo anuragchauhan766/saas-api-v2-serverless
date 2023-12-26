@@ -2,6 +2,32 @@ import middy from "@middy/core";
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { jsonResponse } from "src/helper/jsonResponse";
 import { AnyZodObject, ZodEffects, ZodType, ZodTypeAny } from "zod";
+import { z, ZodError, ZodErrorMap } from "zod";
+
+const customErrorMap: ZodErrorMap = (issue, ctx) => {
+  console.log(issue, ctx);
+  if (issue.code === z.ZodIssueCode.invalid_type) {
+    if (issue.received === "undefined") {
+      return { message: `Field '${issue.path}' is required.` };
+    }
+    if (issue.received === "null") {
+      return { message: `Field '${issue.path}' cannot be null.` };
+    }
+    return {
+      message: `Invalid type: field '${issue.path}' should be '${issue.expected}' but got '${issue.received}'`,
+    };
+  }
+  if (issue.code === z.ZodIssueCode.unrecognized_keys) {
+    return {
+      message:
+        "Unrecognized keys: " +
+        issue.keys.map((el) => `'${el}'`).join(", ") +
+        (issue.path.length === 0 ? "" : " in " + issue.path),
+    };
+  }
+
+  return { message: ctx.defaultError };
+};
 
 export const bodyValidator = (
   schema: AnyZodObject
@@ -14,7 +40,9 @@ export const bodyValidator = (
     if (!body) {
       return jsonResponse(400, { error: "Body is missing in request" });
     }
-    const data = schema.safeParse(JSON.parse(body));
+    const data = schema.safeParse(JSON.parse(body), {
+      errorMap: customErrorMap,
+    });
     if (data.success) {
       return;
     }
@@ -22,7 +50,7 @@ export const bodyValidator = (
     //  TODO: formate the error in meaningfull way
     return jsonResponse(422, {
       name: "Validator Error",
-      error: data.error.flatten().fieldErrors,
+      error: data.error.issues.map((err) => err.message),
     });
   };
   return {

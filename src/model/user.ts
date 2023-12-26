@@ -1,18 +1,21 @@
 import { Schema, model } from "mongoose";
+import { zodObjectId } from "src/helper/zodObjectIdTypes";
 import { z, infer as zodInfer } from "zod";
 
 // !! Please match the moongose schema and zodschema if you are making any changes in schema
 
-export const createUserBodySchema = z.object({
-  _id: z.instanceof(Schema.Types.ObjectId).optional(),
-  name: z.string().min(1, "Please provide name"),
-  email: z
-    .string()
-    .min(1, "Please provide email")
-    .email("Please provide valid email"),
-  role: z.enum(["developer", "subscriber"]).optional(),
-  accountType: z.enum(["bussiness", "education"]).optional(),
-});
+export const createUserBodySchema = z
+  .object({
+    _id: zodObjectId("_id").optional(),
+    name: z.string().min(1, "Please provide name"),
+    email: z
+      .string()
+      .min(1, "Please provide email")
+      .email("Please provide valid email"),
+    role: z.enum(["developer", "subscriber"]).optional(),
+    accountType: z.enum(["bussiness", "education"]).optional(),
+  })
+  .strict();
 
 export type IUser = zodInfer<typeof createUserBodySchema>;
 

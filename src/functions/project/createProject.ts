@@ -6,8 +6,9 @@ import { Project, createProjectBodySchema } from "src/model/project";
 
 const lambdaHandler: APIGatewayProxyHandler = async (event, context) => {
   try {
+    console.log("context", event.requestContext.authorizer);
     const projectData = JSON.parse(event.body as string);
-    console.log(projectData);
+    // console.log(projectData);
     // await Project.create({ ...projectData });
     return jsonResponse(201, {
       success: true,

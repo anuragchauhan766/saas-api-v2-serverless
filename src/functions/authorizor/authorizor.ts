@@ -28,7 +28,7 @@ const generatePolicy = function (
 
   // ! uncomment this for production
   // attached user info in context to that next function can  access these details
-  console.log(token);
+
   if (token) {
     authResponse.context = {
       uid: token.uid,
@@ -36,14 +36,14 @@ const generatePolicy = function (
       email: token.email,
     };
   }
-  console.log(authResponse);
+
   // * for Testing
   // authResponse.context = {
   //   uid: "8328420342",
   //   name: "rahul",
   //   email: "rahul@gmail.com",
   // };
-
+  console.log("authResponse", authResponse);
   return authResponse;
 };
 
