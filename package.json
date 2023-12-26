@@ -1,5 +1,5 @@
 {
-  "name": "bot-saas-api-v2",
+  "name": "saas-api-v2-serverless",
   "version": "1.0.0",
   "description": "Serverless aws-nodejs-typescript template",
   "main": "serverless.ts",

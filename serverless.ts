@@ -1,7 +1,7 @@
 import type { AWS } from "@serverless/typescript";
 import functions from "@functions/index";
 const serverlessConfiguration: AWS = {
-  service: "bot-saas-api-v2",
+  service: "saas-api-v2-serverless",
   frameworkVersion: "3",
   plugins: [
     "serverless-esbuild",
