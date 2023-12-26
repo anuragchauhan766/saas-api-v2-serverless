@@ -25,8 +25,7 @@ The project code base is mainly located within the `src` folder. This folder is 
 │   │   ├── hello
 │   │   │   ├── handler.ts      # `Hello` lambda source code
 │   │   │   ├── index.ts        # `Hello` lambda Serverless configuration
-│   │   │   ├── mock.json       # `Hello` lambda input parameter, if any, for local invocation
-│   │   │   └── schema.ts       # `Hello` lambda input event JSON-Schema
+│   │   │
 │   │   │
 │   │   └── index.ts            # Import/export of all lambda configurations
 │   │
