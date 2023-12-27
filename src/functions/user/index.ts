@@ -14,18 +14,6 @@ export default {
       },
     ],
   },
-  getAllUser: {
-    handler: `${handlerPath(__dirname)}/getAllUser.handler`,
-    events: [
-      {
-        http: {
-          method: "get",
-          path: "/user/all",
-          authorizer: "${self:custom.authorizer.firebaseJwtVerifier}",
-        },
-      },
-    ],
-  },
   createUser: {
     handler: `${handlerPath(__dirname)}/createUser.handler`,
     events: [

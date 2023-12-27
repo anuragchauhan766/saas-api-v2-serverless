@@ -1,7 +1,7 @@
 import { Types } from "mongoose";
 import { z } from "zod";
 
-export const zodObjectId = (field: string) =>
+export const zodMongoObjectId = (field: string) =>
   z.union([
     z.string().refine(
       (value) => {
@@ -13,7 +13,7 @@ export const zodObjectId = (field: string) =>
         }
       },
       {
-        message: `Invalid: ${field} should be a valid ObjectId`,
+        message: `Invalid Field: ${field} should be a valid ObjectId`,
       }
     ),
     z.instanceof(Types.ObjectId),

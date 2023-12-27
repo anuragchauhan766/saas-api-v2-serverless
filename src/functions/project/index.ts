@@ -8,7 +8,19 @@ export default {
       {
         http: {
           method: "post",
-          path: "/user/{id}/project",
+          path: "/user/{userId}/project",
+          authorizer: "${self:custom.authorizer.firebaseJwtVerifier}",
+        },
+      },
+    ],
+  },
+  getProjects: {
+    handler: `${handlerPath(__dirname)}/getProjects.handler`,
+    events: [
+      {
+        http: {
+          method: "get",
+          path: "/user/{userId}/project",
           authorizer: "${self:custom.authorizer.firebaseJwtVerifier}",
         },
       },

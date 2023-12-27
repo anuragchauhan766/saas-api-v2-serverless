@@ -1,11 +1,10 @@
 import middy from "@middy/core";
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { jsonResponse } from "src/helper/jsonResponse";
-import { AnyZodObject, ZodEffects, ZodType, ZodTypeAny } from "zod";
-import { z, ZodError, ZodErrorMap } from "zod";
+import { AnyZodObject } from "zod";
+import { z, ZodErrorMap } from "zod";
 
 const customErrorMap: ZodErrorMap = (issue, ctx) => {
-  console.log(issue, ctx);
   if (issue.code === z.ZodIssueCode.invalid_type) {
     if (issue.received === "undefined") {
       return { message: `Field '${issue.path}' is required.` };
@@ -26,6 +25,12 @@ const customErrorMap: ZodErrorMap = (issue, ctx) => {
     };
   }
 
+  if (issue.code === z.ZodIssueCode.invalid_union) {
+    const unionError = issue.unionErrors
+      .map((er) => er.issues.map((i) => customErrorMap(i, ctx)))
+      .flat();
+    return unionError[0];
+  }
   return { message: ctx.defaultError };
 };
 

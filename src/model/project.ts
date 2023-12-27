@@ -1,13 +1,13 @@
 import { Schema, Types, model } from "mongoose";
-import * as path from "path";
-import { zodObjectId } from "src/helper/zodObjectIdTypes";
-import { string, z, infer as zodInfer } from "zod";
+
+import { zodMongoObjectId } from "src/helper/zodObjectIdTypes";
+import { z, infer as zodInfer } from "zod";
 
 export const createProjectBodySchema = z
   .object({
-    _id: zodObjectId("_id").optional(),
+    _id: zodMongoObjectId("_id").optional(),
     name: z.string().min(1, "Please provide name"),
-    ownerId: zodObjectId("ownerId"),
+    ownerId: zodMongoObjectId("ownerId"),
     // answers: z.string().optional(),
     backgroundColor: z.string().default("#ffffff").optional(),
     basePrompt: z.string().optional(),
@@ -20,7 +20,7 @@ export const createProjectBodySchema = z
     fontColor: z.string().optional(),
     initialMessage: z.string().optional(),
     jobDescription: z.string().optional(),
-    language_bot: z.string().optional(),
+    botLanguage: z.string().optional(),
     links: z.string().array().optional(),
     // nameSpace: z.string().optional(), same as project name
     // projectName: z.string().optional(), already mention above with name field
@@ -71,7 +71,7 @@ const projectSchema = new Schema<IProject>({
   fontColor: { type: String, default: "#000" },
   initialMessage: { type: String, default: "Ask me anything" },
   jobDescription: { type: String },
-  language_bot: { type: String, default: "english" },
+  botLanguage: { type: String, default: "english" },
   links: { type: [String] },
 
   temperature: { type: Number, default: 0 },
@@ -80,5 +80,5 @@ const projectSchema = new Schema<IProject>({
     default: "private",
   },
 });
-
+projectSchema.index({ ownerId: 1, name: 1 }, { unique: true });
 export const Project = model<IProject>("Project", projectSchema);

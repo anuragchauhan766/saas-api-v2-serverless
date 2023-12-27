@@ -2,7 +2,7 @@ import { APIGatewayProxyResult, APIGatewayProxyResultV2 } from "aws-lambda";
 
 export const jsonResponse = (
   statusCode: number,
-  body: any
+  body: Record<string, unknown>
 ): APIGatewayProxyResult => {
   const response: APIGatewayProxyResult = {
     headers: {
@@ -13,3 +13,10 @@ export const jsonResponse = (
   };
   return response;
 };
+
+export const unauthorizedResponse = (): APIGatewayProxyResult =>
+  jsonResponse(401, {
+    success: false,
+    name: "Unauthorized",
+    message: "Unauthorized: You are not authorized to perform this action",
+  });

@@ -43,7 +43,7 @@ const generatePolicy = function (
   //   name: "rahul",
   //   email: "rahul@gmail.com",
   // };
-  console.log("authResponse", authResponse);
+
   return authResponse;
 };
 
