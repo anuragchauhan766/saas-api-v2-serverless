@@ -26,7 +26,7 @@ export const createProjectBodySchema = z
     // projectName: z.string().optional(), already mention above with name field
     // questions: z.string().optional(), if these are interview question ? these are already handled in separate model
     temperature: z.number().optional(),
-    visibility: z.enum(["private", "public"]).default("private"),
+    visibility: z.enum(["private", "public"]).optional(),
   })
   .strict();
 

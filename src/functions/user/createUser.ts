@@ -31,6 +31,7 @@ const lambdaHandler: APIGatewayProxyHandler = async (event, context) => {
     return jsonResponse(200, {
       success: true,
       messgae: "User created successfully",
+      data: user,
     });
   } catch (error: any) {
     if (error.name === "MongoServerError" && error.code === 11000) {

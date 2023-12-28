@@ -1,8 +1,9 @@
 import { APIGatewayProxyHandler } from "aws-lambda";
+
 import { connectDB } from "src/config/mongo";
 import { jsonResponse, unauthorizedResponse } from "src/helper/jsonResponse";
 import { zodMongoObjectId } from "src/helper/zodObjectIdTypes";
-import { IProject, Project, createProjectBodySchema } from "src/model/project";
+import { IProject, Project } from "src/model/project";
 import { ZodError } from "zod";
 
 const lambdaHandler: APIGatewayProxyHandler = async (event, context) => {
@@ -11,35 +12,23 @@ const lambdaHandler: APIGatewayProxyHandler = async (event, context) => {
       event.pathParameters?.userId
     );
 
+    const projectId = zodMongoObjectId("projectId").parse(
+      event.pathParameters?.projectId
+    );
+
     // check if user accessing its own data or not
     // TODO: admin should access others data
     if (event.requestContext.authorizer?.claims.mongoId !== userId) {
       return unauthorizedResponse();
     }
-    let query: Partial<IProject> = { ownerId: userId };
-    if (event.queryStringParameters) {
-      const queryParams = createProjectBodySchema
-        .partial({
-          name: true,
-          ownerId: true,
-        })
-        .parse(event.queryStringParameters);
-
-      query = {
-        ...queryParams,
-        ...query,
-      };
-    }
 
     await connectDB();
-    const projects = await Project.find(query);
-
+    await Project.deleteOne({ _id: projectId });
     return jsonResponse(200, {
       success: true,
-      data: projects,
+      message: "Project with id: " + projectId + " deleted successfully",
     });
   } catch (error: any) {
-    console.log(error);
     if (error instanceof ZodError) {
       return jsonResponse(400, {
         success: false,

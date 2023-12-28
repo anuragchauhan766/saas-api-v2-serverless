@@ -35,6 +35,7 @@ const lambdaHandler: APIGatewayProxyHandler = async (event, context) => {
     }
     // if user is admin
     let users: IUser[] = [];
+
     if (queryParams?.all === "true") {
       users = await User.find({});
     } else {

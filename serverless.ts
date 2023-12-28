@@ -14,6 +14,7 @@ const serverlessConfiguration: AWS = {
     runtime: "nodejs20.x",
     region: "${opt:region, 'ap-south-1'}" as "ap-south-1",
     stage: "${opt:stage, 'dev'}",
+    profile: "development",
     apiGateway: {
       minimumCompressionSize: 1024,
       shouldStartNameWithService: true,
@@ -44,6 +45,9 @@ const serverlessConfiguration: AWS = {
         identitySource: "method.request.header.Authorization",
         identityValidationExpression: "Bearer (.*)",
       },
+    },
+    "serverless-offline": {
+      httpPort: 5000,
     },
   },
 };
