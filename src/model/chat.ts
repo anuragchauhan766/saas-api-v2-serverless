@@ -6,7 +6,6 @@ import { z, infer as zodInfer } from "zod";
 
 export const createChatSchema = z
   .object({
-    _id: zodMongoObjectId("_id").optional(),
     conversationId: zodMongoObjectId("conversationId").optional(),
     message: z.string(),
     response: z.string(),
@@ -17,10 +16,6 @@ export type IChat = zodInfer<typeof createChatSchema>;
 
 const chatSchema = new Schema<IChat>(
   {
-    _id: {
-      type: Schema.Types.ObjectId,
-      auto: true,
-    },
     conversationId: {
       type: Schema.Types.ObjectId,
       ref: "Conversation",
