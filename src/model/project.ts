@@ -77,6 +77,7 @@ const projectSchema = new Schema<IProject>({
   temperature: { type: Number, default: 0 },
   visibility: {
     type: String,
+    enum: ["private", "public"],
     default: "private",
   },
 });
