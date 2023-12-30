@@ -27,8 +27,16 @@ const userSchema = new Schema<IUser>(
     },
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
-    role: { type: String, default: "subscriber" },
-    accountType: { type: String, default: "education" },
+    role: {
+      type: String,
+      enum: ["subscriber", "developer", "admin"],
+      default: "subscriber",
+    },
+    accountType: {
+      type: String,
+      enum: ["bussiness", "education"],
+      default: "education",
+    },
   },
   { timestamps: true }
 );
