@@ -1,9 +1,9 @@
 import { APIGatewayProxyHandler } from "aws-lambda";
+import { error } from "console";
 import { connectDB } from "src/config/mongo";
 import { jsonResponse, unauthorizedResponse } from "src/helper/jsonResponse";
 import { zodMongoObjectId } from "src/helper/zodObjectIdTypes";
-import { IProject, Project, createProjectBodySchema } from "src/model/project";
-
+import { Collaborator } from "src/model/collaborator";
 import { ZodError } from "zod";
 
 const lambdaHandler: APIGatewayProxyHandler = async (event, context) => {
@@ -12,35 +12,22 @@ const lambdaHandler: APIGatewayProxyHandler = async (event, context) => {
       event.pathParameters?.userId
     );
 
-    // check if user accessing its own data or not
-    // TODO: admin should access others data
+    const projectId = zodMongoObjectId("projectId").parse(
+      event.pathParameters?.projectId
+    );
     if (event.requestContext.authorizer?.claims.mongoId !== userId) {
       return unauthorizedResponse();
-    } 
-    let query: Partial<IProject> = { ownerId: userId };
-    if (event.queryStringParameters) {
-      const queryParams = createProjectBodySchema
-        .partial({
-          name: true,
-          ownerId: true,
-        })
-        .parse(event.queryStringParameters);
-
-      query = {
-        ...queryParams,
-        ...query,
-      };
     }
-
     await connectDB();
-    const projects = await Project.find(query);
+    const collaborator = await Collaborator.find({
+      projectId: projectId,
+    });
 
     return jsonResponse(200, {
       success: true,
-      data: projects,
+      data: collaborator,
     });
-  } catch (error: any) {
-    console.log(error);
+  } catch (error) {
     if (error instanceof ZodError) {
       return jsonResponse(400, {
         success: false,
@@ -50,8 +37,8 @@ const lambdaHandler: APIGatewayProxyHandler = async (event, context) => {
     }
     return jsonResponse(500, {
       success: false,
-      name: "Internal Server Error",
-      message: error.message,
+      message: "Internal server error",
+      error: error,
     });
   }
 };

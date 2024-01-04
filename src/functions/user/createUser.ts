@@ -45,6 +45,6 @@ const lambdaHandler: APIGatewayProxyHandler = async (event, context) => {
   }
 };
 
-export const handler = middy(lambdaHandler)
-  //   .use(jsonBodyParser())
-  .use(bodyValidator(createUserBodySchema));
+export const handler = middy(lambdaHandler).use(
+  bodyValidator(createUserBodySchema)
+);
