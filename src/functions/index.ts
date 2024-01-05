@@ -7,6 +7,7 @@ import { default as conversation } from "./conversation";
 import { default as interviewee } from "./interviewee";
 import { default as guestUser } from "./guestUser";
 import { default as resumeScreener } from "./resumeScreener";
+import { default as collaborator } from "./collaborator";
 // import { default as otherFunctions } from "./otherFunctions";
 export default {
   ...auth,
@@ -17,5 +18,6 @@ export default {
   ...interviewee,
   ...guestUser,
   ...resumeScreener,
+  ...collaborator,
   // ...otherFunctions,
 } as AWS["functions"];

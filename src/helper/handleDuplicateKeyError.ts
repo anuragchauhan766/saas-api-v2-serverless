@@ -11,8 +11,7 @@ export const handleDuplicateKeyError = (errorMessage: string) => {
 
     return jsonResponse(409, {
       success: false,
-      name: "DuplicateKeyError",
-
+      name: "DuplicateKeyError: Resource already exists with provided information",
       message: `keys combination already exists in collection ${collection}, index: ${index}`,
       duplicateKeys: keyInfo,
     });
