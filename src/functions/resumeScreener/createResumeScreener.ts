@@ -1,12 +1,17 @@
+import middy from "@middy/core";
 import { APIGatewayProxyHandler } from "aws-lambda";
+
 import { connectDB } from "src/config/mongo";
+import { handleDuplicateKeyError } from "src/helper/handleDuplicateKeyError";
 import { jsonResponse, unauthorizedResponse } from "src/helper/jsonResponse";
 import { zodMongoObjectId } from "src/helper/zodObjectIdTypes";
-import { Chat } from "src/model/chat";
+import { bodyValidator } from "src/middleware/validator";
 
-import { Conversation } from "src/model/conversation";
-import { GuestUser } from "src/model/guestUser";
-
+import {
+  IResumeScreener,
+  ResumeScreener,
+  createResumeScreenerSchema,
+} from "src/model/resumeScreener";
 import { ZodError } from "zod";
 
 const lambdaHandler: APIGatewayProxyHandler = async (event, context) => {
@@ -14,42 +19,32 @@ const lambdaHandler: APIGatewayProxyHandler = async (event, context) => {
     const userId = zodMongoObjectId("userId").parse(
       event.pathParameters?.userId
     );
+
     const projectId = zodMongoObjectId("projectId").parse(
       event.pathParameters?.projectId
     );
+
     if (event.requestContext.authorizer?.claims.mongoId !== userId) {
       return unauthorizedResponse();
     }
 
+    const resumeScreenerData: Omit<IResumeScreener, "projectId"> = JSON.parse(
+      event.body as string
+    );
     await connectDB();
-    if (event.queryStringParameters) {
-      console.log("hello");
-      const conversationId = zodMongoObjectId("conversationId").parse(
-        event.queryStringParameters?.conversationId
-      );
-      const conversation = await Chat.find({ conversationId }).sort({
-        createdAt: -1,
-      });
-      if (!conversation) {
-        return jsonResponse(404, {
-          success: false,
-          name: "Not Found",
-          message: "Conversation not found",
-        });
-      }
-      return jsonResponse(200, {
-        success: true,
-        data: conversation,
-      });
-    }
-    const conversation = await Conversation.find({
+
+    const resumeScreener = await ResumeScreener.create({
+      ...resumeScreenerData,
       projectId,
-    }).sort({ createdAt: -1 });
-    return jsonResponse(200, {
+    });
+    return jsonResponse(201, {
       success: true,
-      data: conversation,
+      data: resumeScreener,
     });
   } catch (error: any) {
+    if (error.name === "MongoServerError" && error.code === 11000) {
+      return handleDuplicateKeyError(error.message);
+    }
     if (error instanceof ZodError) {
       return jsonResponse(400, {
         success: false,
@@ -59,10 +54,12 @@ const lambdaHandler: APIGatewayProxyHandler = async (event, context) => {
     }
     return jsonResponse(500, {
       success: false,
-      name: "Internal Server Error",
-      message: error.message,
+      message: "Internal server error",
+      error: error,
     });
   }
 };
 
-export const handler = lambdaHandler;
+export const handler = middy(lambdaHandler).use(
+  bodyValidator(createResumeScreenerSchema.omit({ projectId: true }))
+);

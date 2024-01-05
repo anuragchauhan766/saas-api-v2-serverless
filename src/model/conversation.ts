@@ -10,7 +10,7 @@ export const createConversationSchema = z
     _id: zodMongoObjectId("_id").optional(),
     projectId: zodMongoObjectId("projectId"),
     senderId: zodMongoObjectId("senderId"),
-    senderType: z.enum(["user", "guestUser"]).optional(),
+    senderType: z.enum(["User", "GuestUser"]).optional(),
     firstchat: z
       .object({
         message: z.string(),

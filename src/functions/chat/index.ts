@@ -13,15 +13,4 @@ export default {
       },
     ],
   },
-  getChats: {
-    handler: `${handlerPath(__dirname)}/getChats.handler`,
-    events: [
-      {
-        http: {
-          method: "get",
-          path: "/user/{userId}/project/{projectId}/chat",
-        },
-      },
-    ],
-  },
 } as AWS["functions"];
